@@ -1,0 +1,7 @@
+# Material Design icons (Apache License 2.0) from npm @material-design-icons/svg 0.14.13 (record/stop/pause filled, the rest outlined; play_arrow, open_in_new, record_voice_over from the baseline Material Icons set). name<TAB>SVG path, 24x24 viewBox.
+fiber_manual_record	M6 12a6 6 0 1 0 12 0a6 6 0 1 0-12 0z
+stop	M6 6h12v12H6z
+pause	M6 19h4V5H6v14zm8-14v14h4V5h-4z
+mic	M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z
+play_arrow	M8 5v14l11-7z
+record_voice_over	M9 13c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0-6c1.1 0 2 .9 2 2s-.9 2-2 2-2-.9-2-2 .9-2 2-2zm0 8c-2.67 0-8 1.34-8 4v3h16v-3c0-2.66-5.33-4-8-4zm-6 5c.22-.72 3.31-2 6-2 2.7 0 5.8 1.29 6 2H3zM15.08 7.05c.84 1.18.84 2.71 0 3.89l1.68 1.69c2.02-2.02 2.02-5.07 0-7.27l-1.68 1.69zM20.07 2l-1.63 1.63c2.77 3.02 2.77 7.56 0 10.74L20.07 16c3.9-3.89 3.91-9.95 0-14z

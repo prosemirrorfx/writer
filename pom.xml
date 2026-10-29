@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>io.github.prosemirrorfx</groupId>
+    <artifactId>prosemirrorfx-writer</artifactId>
+    <version>0.1.0-SNAPSHOT</version>
+    <packaging>jar</packaging>
+
+    <name>prosemirrorfx writer</name>
+    <description>The prosemirrorfx Markdown editor with dictation while editing and read aloud with word highlight, ready to embed.</description>
+    <url>https://github.com/prosemirrorfx/writer</url>
+
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+        </license>
+    </licenses>
+    <developers>
+        <developer>
+            <id>prosemirrorfx</id>
+            <name>Ivan Velikanov</name>
+            <email>ivan.velikanov.dev@gmail.com</email>
+            <url>https://github.com/prosemirrorfx</url>
+        </developer>
+    </developers>
+    <scm>
+        <url>https://github.com/prosemirrorfx/writer</url>
+        <connection>scm:git:https://github.com/prosemirrorfx/writer.git</connection>
+        <developerConnection>scm:git:git@github.com:prosemirrorfx/writer.git</developerConnection>
+    </scm>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.release>25</maven.compiler.release>
+        <prosemirrorfx.version>0.1.0-SNAPSHOT</prosemirrorfx.version>
+        <speechfx.version>0.1.0</speechfx.version>
+        <javafx.version>26.0.2</javafx.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>io.github.prosemirrorfx</groupId>
+            <artifactId>prosemirrorfx-view</artifactId>
+            <version>${prosemirrorfx.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.github.speechfx</groupId>
+            <artifactId>speechfx-dictation-controls</artifactId>
+            <version>${speechfx.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.github.speechfx</groupId>
+            <artifactId>speechfx-readaloud</artifactId>
+            <version>${speechfx.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-controls</artifactId>
+            <version>${javafx.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-swing</artifactId>
+            <version>${javafx.version}</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+</project>

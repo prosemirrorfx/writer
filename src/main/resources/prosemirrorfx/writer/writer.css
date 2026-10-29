@@ -1,0 +1,7 @@
+/* The writer's row: the editor's toolbar sizes, JavaFX's own buttons. The red dot is an indicator, not a theme. */
+.wr-bar { -fx-padding: 2 8 4 8; -fx-spacing: 2; }
+.wr-bar .separator { -fx-padding: 0 4; }
+.wr-bar .pm-icon { -fx-fill: -fx-text-base-color; }
+.wr-bar .wr-recording .pm-icon { -fx-fill: #D32F2F; }
+.wr-speed { -fx-padding: 0 4; -fx-min-width: 36; -fx-alignment: center; }
+.wr-state { -fx-text-fill: -fx-text-base-color; -fx-opacity: 0.8; }
