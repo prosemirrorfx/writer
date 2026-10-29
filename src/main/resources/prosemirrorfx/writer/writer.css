@@ -5,3 +5,7 @@
 .wr-bar .wr-recording .pm-icon { -fx-fill: #D32F2F; }
 .wr-speed { -fx-padding: 0 4; -fx-min-width: 36; -fx-alignment: center; }
 .wr-state { -fx-text-fill: -fx-text-base-color; -fx-opacity: 0.8; }
+/* The fixes offered for one spelling or grammar issue, under the caret. */
+.wr-fixes { -fx-padding: 6; -fx-spacing: 4; -fx-border-width: 1; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.25), 8, 0, 0, 2); }
+.wr-fix-title { -fx-font-weight: bold; -fx-padding: 0 2; }
+.wr-bar .wr-on { -fx-font-weight: bold; }

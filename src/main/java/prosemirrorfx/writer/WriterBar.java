@@ -11,8 +11,8 @@ import speechfx.dictation.controls.*;
 import static speechfx.dictation.DictationState.*;
 
 /**
- * One row under the editor's toolbar: Dictate / Stop / Mic / Speech, then Read / Stop / speed / Voice, then what is
- * happening. Every button wears its key, and the key and the button call the same method of the Writer.
+ * One row under the editor's toolbar: Dictate / Stop / Mic / Speech, then Read / Stop / speed / Voice, then Proof /
+ * next issue, then what is happening. Every button wears its key, and the key and the button call the same method of the Writer.
  */
 final class WriterBar extends HBox {
 
@@ -21,6 +21,7 @@ final class WriterBar extends HBox {
     final Writer w;
     final Button dictate = button(), stopDictation = button(), mic = button(), speech = button();
     final Button read = button(), stopReading = button(), slower = button(), faster = button(), voice = button();
+    final Button proof = button(), next = button();
     final Label speed = new Label(), state = new Label();
 
     WriterBar(Writer w) {
@@ -36,6 +37,9 @@ final class WriterBar extends HBox {
         slower.setOnAction(e -> w.slower());
         faster.setOnAction(e -> w.faster());
         voice.setOnAction(e -> w.voiceMenu(voice));
+        proof.setOnAction(e -> w.proofread());
+        next.setOnAction(e -> w.nextIssue());
+        proof.setTooltip(new Tooltip("Spelling and grammar in this document, on or off. The text is sent to the checker's service."));
         icon(stopDictation, "stop", "Stop dictation");
         icon(mic, "mic", "Microphone");
         speech.setText("Speech");
@@ -51,7 +55,8 @@ final class WriterBar extends HBox {
         var gap = new Region();
         HBox.setHgrow(gap, Priority.ALWAYS);
         getChildren().addAll(dictate, stopDictation, mic, speech, new Separator(Orientation.VERTICAL),
-                read, stopReading, slower, speed, faster, voice, gap, state);
+                read, stopReading, slower, speed, faster, voice, new Separator(Orientation.VERTICAL),
+                proof, next, gap, state);
         refresh();
     }
 
@@ -83,6 +88,11 @@ final class WriterBar extends HBox {
         read.setText(Writer.READ_KEY + (r.reading() ? r.paused() ? " Resume" : " Pause" : " Read"));
         stopReading.setDisable(!r.reading());
         speed.setText(String.format("%.1f×", r.rate));
+        var p = w.proof;
+        proof.setText(p.on ? "Proof on" : "Proof");
+        proof.getStyleClass().remove("wr-on");
+        if (p.on) proof.getStyleClass().add("wr-on");
+        next.setText(Writer.PROOF_KEY + (p.on ? " Next issue" : " Check spelling"));
         state.setText(w.describe());
     }
 }

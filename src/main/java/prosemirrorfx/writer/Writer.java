@@ -17,11 +17,12 @@ import static speechfx.dictation.DictationState.*;
  */
 public final class Writer {
 
-    public static final String DICTATE_KEY = "F3", READ_KEY = "F9";
+    public static final String DICTATE_KEY = "F3", READ_KEY = "F9", PROOF_KEY = "Shift+F7";
 
     final MarkdownEditor md;
     final Dictate dictation;
     final Reader reader;
+    final Proof proof;
     /** The one editor the microphone writes into: starting dictation in another stops it here. */
     static Writer listening;
 
@@ -32,8 +33,10 @@ public final class Writer {
         this.md = md;
         dictation = new Dictate(md.view(), this::problem);
         reader = new Reader(md.view(), this::problem);
+        proof = new Proof(md.view(), this::problem);
         dictation.changed = this::refresh;
         reader.changed = this::refresh;
+        proof.changed = this::refresh;
         // Out of sight (another tab shown): dictation and reading pause, so speech never lands in a hidden note.
         md.node().sceneProperty().addListener((o, was, now) -> {
             if (now != null) return;
@@ -68,6 +71,12 @@ public final class Writer {
 
     public void stopReading() { reader.stop(); md.focus(); }
 
+    /** The first time in a document: turns spelling and grammar on (the text goes to the checker). Then: the next issue and its fixes. */
+    public void nextIssue() { proof.next(); }
+
+    /** Spelling and grammar on or off in this document. */
+    public void proofread() { proof.toggle(); md.focus(); }
+
     public void slower() { reader.rate(reader.rate - 0.1); }
 
     public void faster() { reader.rate(reader.rate + 0.1); }
@@ -93,7 +102,9 @@ public final class Writer {
             default -> "";
         };
         var reading = reader.reading() ? (reader.paused() ? "Reading paused" : "Reading") + String.format(" %.1f×", reader.rate) : "";
-        return listening.isEmpty() ? reading : reading.isEmpty() ? listening : listening + "   " + reading;
+        var parts = new java.util.ArrayList<String>();
+        for (var s : new String[] {listening, reading, proof.describe()}) if (!s.isEmpty()) parts.add(s);
+        return String.join("   ", parts);
     }
 
     void useMicrophone(String name) {
@@ -132,6 +143,7 @@ public final class Writer {
     /** Stops whatever is running and lets the voice engine go. */
     public void close() {
         reader.close();
+        proof.close();
         dictation.stop();
         if (stopSpeechWatch != null) stopSpeechWatch.run();
     }
