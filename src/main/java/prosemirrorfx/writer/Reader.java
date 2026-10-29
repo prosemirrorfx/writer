@@ -1,6 +1,7 @@
 package prosemirrorfx.writer;
 
-import java.util.List;
+import com.atlassian.prosemirror.transform.Mapping;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 import javafx.application.Platform;
@@ -11,7 +12,8 @@ import speechfx.readaloud.*;
 /**
  * Reads the document aloud from the caret, or just the selection, highlighting the word being spoken and its line.
  * The Markdown text is what is spoken (the engine silences its punctuation), so the engine's offsets map back to
- * the document through the source map taken when reading began.
+ * the document through the source map taken when reading began, then through every edit made since, so the
+ * highlight stays on the right word while the user corrects the text. Speed and voice are remembered.
  */
 final class Reader implements SpeechListener {
 
@@ -22,18 +24,26 @@ final class Reader implements SpeechListener {
     static CompletableFuture<Voice> shared;
     SpeechHandle handle;
     SourceMap map;
+    Mapping since;
     int base, end, lastFrom;
-    double rate = 1.0;
+    double rate = ReadingPrefs.rate;
     Runnable changed = () -> {};
 
     Reader(DocView view, Consumer<String> problem) {
         this.view = view;
         this.problem = problem;
+        view.model().onChange((old, now) -> {
+            if (since != null && old.getDoc() != now.getDoc()) since.appendMapping(view.model().lastTransaction().getMapping());
+        });
     }
 
-    /** One voice engine for every editor in the process, started on first use. */
+    /** One voice engine for every editor in the process, started on first use, on the voice chosen last time. */
     static synchronized CompletableFuture<Voice> voice() {
-        if (shared == null) shared = CompletableFuture.supplyAsync(ReadAloud::all);
+        if (shared == null) shared = CompletableFuture.supplyAsync(() -> {
+            var v = ReadAloud.all();
+            if (ReadingPrefs.voice != null && v.voices().contains(ReadingPrefs.voice)) v.select(ReadingPrefs.voice);
+            return v;
+        });
         return shared;
     }
 
@@ -48,8 +58,11 @@ final class Reader implements SpeechListener {
         changed.run();
     }
 
+    void pauseIfReading() { if (reading() && !handle.paused()) toggle(); }
+
     void start() {
         map = view.sourceMap();
+        since = new Mapping(new ArrayList<>(), new ArrayList<>(), 0, 0);
         var sel = view.model().state().getSelection();
         base = map.offset(sel.getFrom());
         end = sel.getEmpty() ? map.text().length() : map.offset(sel.getTo());
@@ -80,6 +93,8 @@ final class Reader implements SpeechListener {
     void rate(double r) {
         rate = Math.round(Math.max(MIN_RATE, Math.min(MAX_RATE, r)) * 10) / 10.0;
         if (handle != null) handle.rate(rate);
+        ReadingPrefs.rate = rate;
+        ReadingPrefs.save();
         changed.run();
     }
 
@@ -92,6 +107,8 @@ final class Reader implements SpeechListener {
             var at = lastFrom;
             if (handle != null) { handle.stop(); handle = null; }
             v.select(name);
+            ReadingPrefs.voice = name;
+            ReadingPrefs.save();
             if (wasReading) speakFrom(at);
             changed.run();
         }));
@@ -105,7 +122,10 @@ final class Reader implements SpeechListener {
         Platform.runLater(() -> {
             if (handle == null || map == null) return;
             lastFrom = base + from;
-            view.setReading(map.docPositionAtOffset(base + from), map.docPositionAtOffset(base + to), estimated);
+            var size = view.model().state().getDoc().getContent().getSize();
+            var a = Math.min(size, since.map(map.docPositionAtOffset(base + from), 1));
+            var b = Math.min(size, since.map(map.docPositionAtOffset(base + to), -1));
+            view.setReading(a, Math.max(a, b), estimated);
         });
     }
 

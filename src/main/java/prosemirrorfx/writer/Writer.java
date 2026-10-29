@@ -22,6 +22,9 @@ public final class Writer {
     final MarkdownEditor md;
     final Dictate dictation;
     final Reader reader;
+    /** The one editor the microphone writes into: starting dictation in another stops it here. */
+    static Writer listening;
+
     WriterBar bar;
     Runnable stopSpeechWatch;
 
@@ -31,6 +34,13 @@ public final class Writer {
         reader = new Reader(md.view(), this::problem);
         dictation.changed = this::refresh;
         reader.changed = this::refresh;
+        // Out of sight (another tab shown): dictation and reading pause, so speech never lands in a hidden note.
+        md.node().sceneProperty().addListener((o, was, now) -> {
+            if (now != null) return;
+            dictation.pauseIfLive();
+            reader.pauseIfReading();
+        });
+        if (ReadingPrefs.savedVoiceIsSlowToStart()) Reader.voice();
     }
 
     /** The row of dictation and read-aloud controls, made on first use. FX thread. */
@@ -44,6 +54,8 @@ public final class Writer {
 
     /** Starts dictation, or pauses and resumes it. */
     public void dictate() {
+        if (listening != null && listening != this && listening.dictation.active()) listening.dictation.stop();
+        listening = this;
         if (dictation.state == IDLE || dictation.state == STOPPED || dictation.state == ERROR) watchSpeechChoice();
         dictation.toggle();
         md.focus();

@@ -33,6 +33,8 @@ final class Dictate implements DictationListener {
         else { session.pause(); set(PAUSED); view.setInterimAtCaret(""); }
     }
 
+    void pauseIfLive() { if (session != null && !session.paused()) toggle(); }
+
     void start() {
         set(STARTING);
         CompletableFuture.supplyAsync(() -> {
